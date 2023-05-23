@@ -13,7 +13,7 @@ def buscarPregunta(pregunta):
         return "Es la pregunta múltiplos."
     elif(len(pregunta) > 17 and pregunta == "Indique cuantos "+ pregunta[16] +" hay en la siguiente secuencia:" ):
         return "Es la pregunta de buscar emojis."
-    elif(pregunta == "Indique la fecha que corresponde a 104 dias contados desde antes de : " + datetime.now().strftime('23/%m/%Y')):#%d
+    elif(pregunta == "Indique la fecha que corresponde a 104 dias contados desde antes de : " + datetime.now().strftime('%d/%m/%Y')):
         return "Es la pregunta de buscar fecha."
     elif(pregunta == "Complete la siguiente operación matemática:"):
         return "Es la pregunta de operación matemática."
@@ -89,7 +89,7 @@ fecha = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[1]/input
 
 WebDriverWait(driver, 20).until(
     ExpectedConditions.element_to_be_clickable((By.XPATH, "/html/body/div[2]/form/div[1]/div[1]/input"))
-                                ).send_keys((datetime.now() - timedelta(days=103)).strftime('%m/%d/%Y'))
+                                ).send_keys((datetime.now() - timedelta(days=int(pregunta1.text.split(" ")[6]))).strftime('%m/%d/%Y'))
 
 #PREGUNTA 2
 grid = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[2]/div")
@@ -178,12 +178,22 @@ print(buscarPregunta(pregunta1.text))
 print(pregunta1.text)
 print(buscarPregunta(pregunta2.text))
 print(pregunta2.text)
+
 #PREGUNTA 1
+cadena = ""
+for i in range(int(pregunta1.text.split(" ")[1])):
+    cadena += "X"
+textArea = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[1]/textarea")
+textArea.send_keys(cadena)
+print(cadena)
 
-
-#PREGUNTA 2
-
-    
+#PREGUNTA 2 
+fecha = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[2]/input")
+dias = int(pregunta2.text.split(" ")[6])
+WebDriverWait(driver, 20).until(
+    ExpectedConditions.element_to_be_clickable((By.XPATH, "/html/body/div[2]/form/div[1]/div[2]/input"))
+                                ).send_keys((datetime.now() - timedelta(days=dias)).strftime('%m/%d/%Y'))
+print((datetime.now() - timedelta(days=dias)).strftime('%m/%d/%Y'))
 
 #Enter al botón Enviar
 clickBotonEnviar(driver)
