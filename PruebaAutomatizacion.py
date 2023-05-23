@@ -2,16 +2,21 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ExpectedConditions
 from datetime import datetime
+from datetime import timedelta
 import time
 
 def buscarPregunta(pregunta):
     if(pregunta == "¿Cuál de estos números es múltiplo de 5?"):
         return "Es la pregunta 1."
-    elif(pregunta == "Indique cuantos 🐹 hay en la siguiente secuencia:"):
+    elif(len(pregunta) > 17 and pregunta == "Indique cuantos "+ pregunta[16] +" hay en la siguiente secuencia:" ):
         return "Es la pregunta 2."
     elif(pregunta == "Indique la fecha que corresponde a 104 dias contados desde antes de : " + datetime.now().strftime('23/%m/%Y')):#%d
         return "Es la pregunta 3."
+    elif(pregunta == "Complete la siguiente operación matemática:"):
+        return "Es la pregunta 4."
     else:
         return"No se encontró."
     
@@ -43,7 +48,7 @@ pregunta2 = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[2]//
 print(buscarPregunta(pregunta1.text))
 print(buscarPregunta(pregunta2.text))
 
-
+#PREGUNTA 1
 grid = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[1]/div")
 lista = grid.find_elements(By.NAME, "checkbox")
 
@@ -51,19 +56,18 @@ for elemento in lista:
     if int(elemento.get_attribute("value")) % 5 == 0:
         elemento.click()
 
-print("Dio los clicks.")
-
+#PREGUNTA 2
 animalsEmojiGroup = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[2]/div/p[2]")
 #print(str(len(animalsEmojiGroup.text)))
 #inputButton = driver.find_element(By.CLASS_NAME, "border-2 border-black rounded-sm p-2")
 inputButton = driver.find_element(By.XPATH, "/html/body/div[2]/form/div[1]/div[2]/input")
 countEmojis = 0
 for emoji in animalsEmojiGroup.text:
-    if emoji == "🐹":
+    if emoji == pregunta1.text[16]:
         countEmojis += 1
 inputButton.send_keys(str(countEmojis)) 
-inputButton.send_keys(Keys.ENTER)
-
+#inputButton.send_keys(Keys.ENTER)
+driver.find_element_by_xpath("/html/body/div[2]/form/div[2]/button").send_keys(Keys.ENTER)
 
 ###CICLO2
 ciclos = driver.find_element_by_xpath("/html/body/div[2]/div/div/div/p[2]")
@@ -74,12 +78,77 @@ pregunta2 = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[2]//
 #/html/body/div[2]/form/div[1]/div[2]/p
 print(buscarPregunta(pregunta1.text))
 print(buscarPregunta(pregunta2.text))
-print(pregunta2.text)
 
+#PREGUNTA 1
+fecha = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[1]/input")
 
+WebDriverWait(driver, 20).until(
+    ExpectedConditions.element_to_be_clickable((By.XPATH, "/html/body/div[2]/form/div[1]/div[1]/input"))
+                                ).send_keys((datetime.now() - timedelta(days=103)).strftime('%m/%d/%Y'))
 
+#PREGUNTA 2
+grid = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[2]/div")
+lista = grid.find_elements(By.NAME, "checkbox")
 
-time.sleep(20)
+for elemento in lista:
+    if int(elemento.get_attribute("value")) % 5 == 0:
+        elemento.click()
+
+#Enter al botón Enviar
+driver.find_element_by_xpath("/html/body/div[2]/form/div[2]/button").send_keys(Keys.ENTER)
+
+###CICLO3
+ciclos = driver.find_element_by_xpath("/html/body/div[2]/div/div/div/p[2]")
+print(ciclos.text)
+pregunta1 = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[1]//p")
+pregunta2 = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[2]//p")
+#/html/body/div[2]/form/div[1]/div[2]/p
+#/html/body/div[2]/form/div[1]/div[2]/p
+print(buscarPregunta(pregunta1.text))
+print(buscarPregunta(pregunta2.text))
+
+#PREGUNTA 1
+x = eval(driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[1]//p[2]").text[:-2])
+grid = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[1]/div")
+lista = grid.find_elements(By.NAME, "radio")
+
+for elemento in lista:
+    if int(elemento.get_attribute("value")) == int(x):
+        elemento.click()
+
+#PREGUNTA 2
+grid = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[2]/div")
+lista = grid.find_elements(By.NAME, "checkbox")
+
+for elemento in lista:
+    if int(elemento.get_attribute("value")) % 5 == 0:
+        elemento.click()
+
+#Enter al botón Enviar
+driver.find_element_by_xpath("/html/body/div[2]/form/div[2]/button").send_keys(Keys.ENTER)
+
+###CICLO4
+ciclos = driver.find_element_by_xpath("/html/body/div[2]/div/div/div/p[2]")
+print(ciclos.text)
+pregunta1 = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[1]//p")
+pregunta2 = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[2]//p")
+print(buscarPregunta(pregunta1.text))
+print(buscarPregunta(pregunta2.text))
+
+#PREGUNTA 1
+animalsEmojiGroup = driver.find_element_by_xpath("/html/body/div[2]/form/div[1]/div[2]/div/p[2]")
+#print(str(len(animalsEmojiGroup.text)))
+#inputButton = driver.find_element(By.CLASS_NAME, "border-2 border-black rounded-sm p-2")
+inputButton = driver.find_element(By.XPATH, "/html/body/div[2]/form/div[1]/div[2]/input")
+countEmojis = 0
+for emoji in animalsEmojiGroup.text:
+    if emoji == pregunta1.text[16]:
+        countEmojis += 1
+inputButton.send_keys(str(countEmojis)) 
+#inputButton.send_keys(Keys.ENTER)
+driver.find_element_by_xpath("/html/body/div[2]/form/div[2]/button").send_keys(Keys.ENTER)
+
+time.sleep(100)
 
 #except:
 #    print("Error.")
